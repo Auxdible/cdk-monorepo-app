@@ -16,7 +16,6 @@ export class InfraStack extends cdk.Stack {
     super(scope, id, props);
     const pipeline = new pipelines.CodePipeline(this, "ToolsPipeline", {
       crossAccountKeys: true,
-
       synth: new pipelines.ShellStep("Synth", {
         input: pipelines.CodePipelineSource.connection(
           gitHubRepository.repo,

@@ -15,7 +15,11 @@ export class AppStack extends cdk.Stack {
       defaultBehavior: {
         origin:
           cloudfront_origins.S3BucketOrigin.withOriginAccessControl(bucket),
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+        allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
       },
+      defaultRootObject: "index.html",
     });
     const bucketDeployment = new s3deployment.BucketDeployment(
       this,
