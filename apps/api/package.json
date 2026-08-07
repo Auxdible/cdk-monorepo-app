@@ -1,0 +1,16 @@
+{
+  "name": "api",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch ./src/local.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "esbuild": "^0.28.1",
+    "npm-run-all2": "^9.0.2"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.0",
+    "hono": "^4.13.1"
+  }
+}
