@@ -10,6 +10,7 @@ import {
   environments,
   gitHubRepository,
 } from "../../config/environments";
+import { BuildSpec } from "aws-cdk-lib/aws-codebuild";
 export class InfraStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -31,9 +32,33 @@ export class InfraStack extends cdk.Stack {
           "cd ./packages/infra",
           `pnpx cdk synth`,
         ],
+
         primaryOutputDirectory: "packages/infra/cdk.out",
       }),
+      codeBuildDefaults: {
+        partialBuildSpec: BuildSpec.fromObject({
+          phases: {
+            install: {
+              "runtime-versions": {
+                nodejs: "22",
+              },
+            },
+          },
+        }),
+      },
+      synthCodeBuildDefaults: {
+        partialBuildSpec: BuildSpec.fromObject({
+          phases: {
+            install: {
+              "runtime-versions": {
+                nodejs: "22",
+              },
+            },
+          },
+        }),
+      },
     });
+
     pipeline.addStage(
       new AppStage(this, "DevStage", {
         env: environments.dev,
