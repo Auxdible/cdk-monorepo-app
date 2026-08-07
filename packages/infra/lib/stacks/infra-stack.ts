@@ -31,7 +31,7 @@ export class InfraStack extends cdk.Stack {
           "cd ./packages/infra",
           `pnpx cdk synth`,
         ],
-        primaryOutputDirectory: "./packages/infra/cdk.out",
+        primaryOutputDirectory: "packages/infra/cdk.out",
       }),
     });
     pipeline.addStage(
