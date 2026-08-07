@@ -5,34 +5,25 @@ import * as pipelines from "aws-cdk-lib/pipelines";
 import * as ssm from "aws-cdk-lib/aws-ssm";
 import * as secretsmanager from "aws-cdk-lib/aws-secretsmanager";
 import { AppStage } from "../stages/app-stage";
-import { environments } from "../../config/environments";
+import {
+  codeConnectionARN,
+  environments,
+  gitHubRepository,
+} from "../../config/environments";
 export class InfraStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-    const owner = ssm.StringParameter.valueForStringParameter(
-        this,
-        "repository-owner",
-      ),
-      repo = ssm.StringParameter.valueForStringParameter(
-        this,
-        "repository-repo",
-      ),
-      branch = ssm.StringParameter.valueForStringParameter(
-        this,
-        "repository-branch",
-      );
-
-    const accessToken = secretsmanager.Secret.fromSecretNameV2(
-      this,
-      "RepositoryOAuthSecret",
-      "repository-accessToken",
-    );
     const pipeline = new pipelines.CodePipeline(this, "ToolsPipeline", {
       crossAccountKeys: true,
+
       synth: new pipelines.ShellStep("Synth", {
-        input: pipelines.CodePipelineSource.gitHub(owner + "/" + repo, branch, {
-          authentication: accessToken.secretValue,
-        }),
+        input: pipelines.CodePipelineSource.connection(
+          gitHubRepository.repo,
+          gitHubRepository.branch,
+          {
+            connectionArn: codeConnectionARN,
+          },
+        ),
         commands: [
           "npm i -g pnpm",
           "pnpm i --no-frozen-lockfile",

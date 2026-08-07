@@ -4,6 +4,7 @@ import * as s3deployment from "aws-cdk-lib/aws-s3-deployment";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
 import * as cloudfront_origins from "aws-cdk-lib/aws-cloudfront-origins";
+import path from "path";
 export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: cdk.StackProps) {
     super(scope, id, props);
@@ -22,7 +23,11 @@ export class AppStack extends cdk.Stack {
       {
         destinationBucket: bucket,
         distribution: distribution,
-        sources: [s3deployment.Source.asset("/apps/web/dist")],
+        sources: [
+          s3deployment.Source.asset(
+            path.join(__dirname, "../../../../apps/web/dist"),
+          ),
+        ],
       },
     );
   }
