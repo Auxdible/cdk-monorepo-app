@@ -33,7 +33,7 @@ export class InfraStack extends cdk.Stack {
           `pnpx cdk synth`,
         ],
 
-        primaryOutputDirectory: "packages/infra/cdk.out",
+        primaryOutputDirectory: "./packages/infra/cdk.out",
       }),
       codeBuildDefaults: {
         partialBuildSpec: BuildSpec.fromObject({
