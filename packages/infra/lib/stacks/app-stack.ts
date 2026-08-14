@@ -39,7 +39,7 @@ export class AppStack extends cdk.Stack {
     );
     const apiFunc = new lambda.Function(this, "APIFunction", {
       code: lambda.AssetCode.fromAsset(
-        path.join(__dirname, "../../../../apps/api/src/"),
+        path.join(__dirname, "../../../../apps/api/"),
       ),
       runtime: lambda.Runtime.NODEJS_24_X,
       handler: "index.handler",
