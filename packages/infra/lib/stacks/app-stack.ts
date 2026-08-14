@@ -4,10 +4,11 @@ import * as s3deployment from "aws-cdk-lib/aws-s3-deployment";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
 import * as cloudfront_origins from "aws-cdk-lib/aws-cloudfront-origins";
-import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as lambda_node from "aws-cdk-lib/aws-lambda-nodejs";
 import * as apigw from "aws-cdk-lib/aws-apigatewayv2";
 import * as apigw_integrations from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import path from "path";
+import * as lambda from "aws-cdk-lib/aws-lambda";
 export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: cdk.StackProps) {
     super(scope, id, props);
@@ -37,12 +38,10 @@ export class AppStack extends cdk.Stack {
         ],
       },
     );
-    const apiFunc = new lambda.Function(this, "APIFunction", {
-      code: lambda.AssetCode.fromAsset(
-        path.join(__dirname, "../../../../apps/api/"),
-      ),
+    const apiFunc = new lambda_node.NodejsFunction(this, "APIFunction", {
+      entry: "apps/api/src/index.ts",
       runtime: lambda.Runtime.NODEJS_24_X,
-      handler: "index.handler",
+      handler: "handler",
     });
     const lambdaIntegration = new apigw_integrations.HttpLambdaIntegration(
       "APIFunctionIntegration",
