@@ -29,6 +29,9 @@ export class AppStack extends cdk.Stack {
       entry: path.join(__dirname, "../../../../apps/api/src/index.ts"),
       runtime: lambda.Runtime.NODEJS_24_X,
       handler: "handler",
+      environment: {
+        ALLOWED_ORIGIN: distribution.domainName,
+      },
     });
     const lambdaIntegration = new apigw_integrations.HttpLambdaIntegration(
       "APIFunctionIntegration",

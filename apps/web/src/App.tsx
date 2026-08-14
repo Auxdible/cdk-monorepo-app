@@ -4,15 +4,18 @@ import viteLogo from "./assets/vite.svg";
 import heroImg from "./assets/hero.png";
 import "./App.css";
 import { useQuery } from "react-query";
+import { config } from "./config";
+import axios from "axios";
 
 function App() {
   const [count, setCount] = useState(0);
   const { data } = useQuery({
-    queryKey: ["config"],
+    queryKey: ["test-query"],
     queryFn: async () => {
-      const data = await fetch("./config.json");
-      console.log({ data });
-      return await data.json();
+      return await axios
+        .get(config.apiUrl + "api/test")
+        .then((data) => data.data)
+        .catch(() => ({ error: "nuthin found" }));
     },
   });
   return (
@@ -25,7 +28,8 @@ function App() {
         </div>
         <div>
           <h1>Get started</h1>
-          Api URL: {data?.apiUrl}
+          Api URL: {config.apiUrl}
+          {data ? <code>{data}</code> : ""}
           <p>
             Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
           </p>
