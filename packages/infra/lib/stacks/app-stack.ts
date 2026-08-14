@@ -39,7 +39,7 @@ export class AppStack extends cdk.Stack {
       },
     );
     const apiFunc = new lambda_node.NodejsFunction(this, "APIFunction", {
-      entry: "apps/api/src/index.ts",
+      entry: path.join(__dirname, "../../../../apps/api/src/index.ts"),
       runtime: lambda.Runtime.NODEJS_24_X,
       handler: "handler",
     });
