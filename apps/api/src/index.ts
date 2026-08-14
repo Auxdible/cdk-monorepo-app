@@ -3,7 +3,7 @@ import { handle } from "hono/aws-lambda";
 
 export const app = new Hono();
 
-app.get("/", (c) => {
+app.get("/api", (c) => {
   return c.text("Hello World");
 });
 
