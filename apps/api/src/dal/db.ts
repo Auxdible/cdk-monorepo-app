@@ -33,7 +33,7 @@ const Task = new Entity(
       taskID: {
         pk: {
           field: "pk",
-          composite: ["task"],
+          composite: ["taskID"],
         },
         sk: {
           field: "sk",
