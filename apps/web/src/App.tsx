@@ -1,12 +1,20 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "./assets/vite.svg";
+import heroImg from "./assets/hero.png";
+import "./App.css";
+import { useQuery } from "react-query";
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const [count, setCount] = useState(0);
+  const { data } = useQuery({
+    queryKey: ["config"],
+    queryFn: async () => {
+      const data = await fetch("./config.json");
+      console.log({ data });
+      return await data.json();
+    },
+  });
   return (
     <>
       <section id="center">
@@ -17,6 +25,7 @@ function App() {
         </div>
         <div>
           <h1>Get started</h1>
+          Api URL: {data?.apiUrl}
           <p>
             Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
           </p>
@@ -116,7 +125,7 @@ function App() {
       <div className="ticks"></div>
       <section id="spacer"></section>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -25,19 +25,6 @@ export class AppStack extends cdk.Stack {
       },
       defaultRootObject: "index.html",
     });
-    const bucketDeployment = new s3deployment.BucketDeployment(
-      this,
-      "WebDeployment",
-      {
-        destinationBucket: bucket,
-        distribution: distribution,
-        sources: [
-          s3deployment.Source.asset(
-            path.join(__dirname, "../../../../apps/web/dist"),
-          ),
-        ],
-      },
-    );
     const apiFunc = new lambda_node.NodejsFunction(this, "APIFunction", {
       entry: path.join(__dirname, "../../../../apps/api/src/index.ts"),
       runtime: lambda.Runtime.NODEJS_24_X,
@@ -54,6 +41,23 @@ export class AppStack extends cdk.Stack {
         allowOrigins: [`https://${distribution.domainName}`],
       },
     });
+    const bucketDeployment = new s3deployment.BucketDeployment(
+      this,
+      "WebDeployment",
+      {
+        destinationBucket: bucket,
+        distribution: distribution,
+        sources: [
+          s3deployment.Source.asset(
+            path.join(__dirname, "../../../../apps/web/dist"),
+          ),
+          s3deployment.Source.jsonData("config.json", {
+            apiUrl: apiGW.defaultStage!.url,
+          }),
+        ],
+      },
+    );
+
     apiGW.addRoutes({
       path: "/{path+}",
       methods: [apigw.HttpMethod.ANY],
