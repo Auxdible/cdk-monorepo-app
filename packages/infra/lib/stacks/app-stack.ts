@@ -4,6 +4,9 @@ import * as s3deployment from "aws-cdk-lib/aws-s3-deployment";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
 import * as cloudfront_origins from "aws-cdk-lib/aws-cloudfront-origins";
+import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as apigw from "aws-cdk-lib/aws-apigatewayv2";
+import * as apigw_integrations from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import path from "path";
 export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: cdk.StackProps) {
@@ -34,5 +37,27 @@ export class AppStack extends cdk.Stack {
         ],
       },
     );
+    const apiFunc = new lambda.Function(this, "APIFunction", {
+      code: lambda.AssetCode.fromAsset(
+        path.join(__dirname, "../../../../apps/api/src/"),
+      ),
+      runtime: lambda.Runtime.NODEJS_24_X,
+      handler: "index.handler",
+    });
+    const lambdaIntegration = new apigw_integrations.HttpLambdaIntegration(
+      "APIFunctionIntegration",
+      apiFunc,
+    );
+    const apiGW = new apigw.HttpApi(this, "AppAPIGW", {
+      corsPreflight: {
+        allowHeaders: ["*"],
+        allowMethods: [apigw.CorsHttpMethod.ANY],
+        allowOrigins: [`https://${distribution.domainName}`],
+      },
+    });
+    apiGW.addRoutes({
+      path: "/api",
+      integration: lambdaIntegration,
+    });
   }
 }
