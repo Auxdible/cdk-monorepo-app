@@ -8,6 +8,7 @@ import * as lambda_node from "aws-cdk-lib/aws-lambda-nodejs";
 import * as apigw from "aws-cdk-lib/aws-apigatewayv2";
 import * as apigw_integrations from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import path from "path";
+import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: cdk.StackProps) {
@@ -65,6 +66,20 @@ export class AppStack extends cdk.Stack {
       path: "/{path+}",
       methods: [apigw.HttpMethod.ANY],
       integration: lambdaIntegration,
+    });
+
+    // database using dynamodb
+
+    const tasksTable = new dynamodb.TableV2(this, "TasksTable", {
+      partitionKey: {
+        name: "taskID",
+        type: dynamodb.AttributeType.STRING,
+      },
+      tableName: "tasks",
+      sortKey: {
+        name: "dateCreated",
+        type: dynamodb.AttributeType.STRING,
+      },
     });
   }
 }

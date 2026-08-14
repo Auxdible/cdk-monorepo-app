@@ -1,8 +1,13 @@
 import { Hono } from "hono";
-import { handle } from "hono/aws-lambda";
+import { ApiGatewayRequestContextV2, handle } from "hono/aws-lambda";
 import { cors } from "hono/cors";
+import { task } from "./routes/task";
 
-export const app = new Hono();
+export interface Bindings {
+  requestContexdt: ApiGatewayRequestContextV2;
+}
+
+export const app = new Hono<{ Bindings: Bindings }>();
 
 app.use("*", cors({ origin: process.env.ALLOWED_ORIGIN }));
 
@@ -10,8 +15,6 @@ app.get("/api", (c) => {
   return c.text("Hello World");
 });
 
-app.get("/api/test", (c) => {
-  return c.json({ test: "This is a test of the endpoint!" });
-});
+app.route("/api/task", task);
 
 export const handler = handle(app);

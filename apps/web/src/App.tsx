@@ -3,21 +3,10 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "./assets/vite.svg";
 import heroImg from "./assets/hero.png";
 import "./App.css";
-import { useQuery } from "react-query";
-import { config } from "./config";
-import axios from "axios";
 
 function App() {
   const [count, setCount] = useState(0);
-  const { data } = useQuery({
-    queryKey: ["test-query"],
-    queryFn: async () => {
-      return await axios
-        .get(config.apiUrl + "api/test")
-        .then((data) => data.data)
-        .catch(() => ({ error: "nuthin found" }));
-    },
-  });
+
   return (
     <>
       <section id="center">
@@ -28,8 +17,6 @@ function App() {
         </div>
         <div>
           <h1>Get started</h1>
-          Api URL: {config.apiUrl}
-          {data ? <code>{JSON.stringify(data)}</code> : ""}
           <p>
             Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
           </p>

@@ -10,7 +10,10 @@
     "npm-run-all2": "^9.0.2"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1111.0",
+    "@aws-sdk/lib-dynamodb": "^3.1111.0",
     "@hono/node-server": "^2.1.0",
+    "electrodb": "^3.9.3",
     "hono": "^4.13.1"
   }
 }
