@@ -16,10 +16,10 @@ const Task = new Entity(
     attributes: {
       taskID: {
         type: "string",
-        default: () => randomUUIDv7(),
+        default: () => randomUUIDv7().toString(),
         required: false,
       },
-      createdDate: {
+      dateCreated: {
         type: "string",
         default: () => new Date().toISOString(),
         required: false,
@@ -39,7 +39,7 @@ const Task = new Entity(
         },
         sk: {
           field: "sk",
-          composite: ["createdDate"],
+          composite: ["dateCreated"],
         },
       },
     },
