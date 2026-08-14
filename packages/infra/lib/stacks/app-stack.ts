@@ -81,5 +81,6 @@ export class AppStack extends cdk.Stack {
         type: dynamodb.AttributeType.STRING,
       },
     });
+    tasksTable.grantFullAccess(apiFunc);
   }
 }
