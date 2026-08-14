@@ -7,4 +7,8 @@ app.get("/api", (c) => {
   return c.text("Hello World");
 });
 
+app.get("/api/test", (c) => {
+  return c.json({ test: "This is a test of the endpoint!" });
+});
+
 export const handler = handle(app);
