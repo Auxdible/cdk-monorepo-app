@@ -29,7 +29,7 @@ function App() {
         <div>
           <h1>Get started</h1>
           Api URL: {config.apiUrl}
-          {data ? <code>{data}</code> : ""}
+          {data ? <code>{JSON.stringify(data)}</code> : ""}
           <p>
             Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
           </p>
