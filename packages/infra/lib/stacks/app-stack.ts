@@ -55,7 +55,7 @@ export class AppStack extends cdk.Stack {
       },
     });
     apiGW.addRoutes({
-      path: "/api",
+      path: "/{path+}",
       integration: lambdaIntegration,
     });
   }
