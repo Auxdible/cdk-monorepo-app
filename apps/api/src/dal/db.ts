@@ -17,10 +17,12 @@ const Task = new Entity(
       taskID: {
         type: "string",
         default: () => randomUUIDv7(),
+        required: false,
       },
       createdDate: {
         type: "string",
         default: () => new Date().toISOString(),
+        required: false,
       },
       title: {
         type: "string",
