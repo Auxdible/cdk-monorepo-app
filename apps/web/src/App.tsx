@@ -34,7 +34,7 @@ function App() {
       return (
         (await axios
           .get(config.apiUrl + "api/task")
-          .then((data) => data.data)) || []
+          .then((data) => data.data?.data)) || []
       );
     },
   });
@@ -52,7 +52,7 @@ function App() {
         (await axios.post(config.apiUrl + "api/task", form).then((data) => {
           reset({}, { keepValues: false, keepDirty: false, keepErrors: false });
           queryClient.invalidateQueries({ queryKey: ["tasks"] });
-          return data.data;
+          return data.data?.data;
         })) || undefined
       );
     },
