@@ -27,6 +27,7 @@ import {
 import { zTaskForm, type Task, type TaskForm } from "./types/task";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Trash } from "@pxlkit/ui";
 function App() {
   const { data: tasks, isLoading } = useQuery<Task[]>({
     queryKey: ["tasks"],
@@ -45,18 +46,32 @@ function App() {
   });
   const { register, handleSubmit, reset } = form;
   const queryClient = useQueryClient();
-  const { mutateAsync, isLoading: isPending } = useMutation({
+  const { mutateAsync: postTask, isLoading: isLoadingPost } = useMutation({
     mutationKey: ["tasks-post"],
     mutationFn: async (form: TaskForm) => {
       return (
         (await axios.post(config.apiUrl + "api/task", form).then((data) => {
           reset({}, { keepValues: false, keepDirty: false, keepErrors: false });
-          queryClient.invalidateQueries({ queryKey: ["tasks"] });
+          queryClient.refetchQueries({ queryKey: ["tasks"] });
           return data.data?.data;
         })) || undefined
       );
     },
   });
+  const { mutateAsync: deleteTask, isLoading: isLoadingDelete } = useMutation({
+    mutationKey: ["tasks-delete"],
+    mutationFn: async (taskID: string) => {
+      return (
+        (await axios
+          .delete(config.apiUrl + "api/task/" + taskID)
+          .then((data) => {
+            queryClient.refetchQueries({ queryKey: ["tasks"] });
+            return data.data?.data;
+          })) || undefined
+      );
+    },
+  });
+  const isPending = isLoadingPost || isLoadingDelete;
   const [randomLoadingIcon, setRandomLoadingIcon] = useState(() =>
     Math.random(),
   );
@@ -68,7 +83,7 @@ function App() {
   return (
     <div className="flex items-center flex-col h-screen w-full justify-between">
       <div className="flex-1 flex items-center retro min-w-2xl w-full justify-center">
-        {isLoading ? (
+        {isLoading || isPending ? (
           <AnimatedPxlKitIcon
             size={84}
             icon={randomLoadingIcon > 0.5 ? BouncingBall : CoinSpin}
@@ -80,6 +95,7 @@ function App() {
                 <TableHead>Title</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Date Created</TableHead>
+                <TableHead>Delete</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -88,6 +104,18 @@ function App() {
                   <TableCell>{i.title}</TableCell>
                   <TableCell>{i.description}</TableCell>
                   <TableCell>{i.dateCreated}</TableCell>
+                  <TableCell>
+                    <Button
+                      onClick={() => {
+                        deleteTask(i.taskID);
+                      }}
+                      className="mt-0.5 mt-2"
+                      variant={"destructive"}
+                      size={"sm"}
+                    >
+                      <PxlKitIcon icon={Trash} /> Delete
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -101,7 +129,7 @@ function App() {
           <CardHeader>
             <CardTitle>Tasks Form</CardTitle>
           </CardHeader>
-          <form onSubmit={handleSubmit((data) => mutateAsync(data))}>
+          <form onSubmit={handleSubmit((data) => postTask(data))}>
             <CardContent>
               <div className="space-y-1">
                 <Label>Title</Label>
