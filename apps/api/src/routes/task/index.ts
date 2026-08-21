@@ -40,20 +40,14 @@ task.post("/", async (c) => {
   return c.json({ error: "Failed to create" }, 400);
 });
 task.delete("/:taskID", async (c) => {
-  const data = c.req.param("taskID");
+  const taskID = c.req.param("taskID");
 
   try {
-    const items = await Task.query
-      .taskID({
-        taskID: data,
-      })
-      .go();
-    const deletedTask = await Task.delete(items.data).go();
+    const deletedTask = await Task.delete({ taskID }).go();
     return c.json({ success: true }, 200);
   } catch (x) {
     return c.json({ error: x instanceof Error ? x.message : x + "" }, 500);
   }
-  return c.json({ error: "Failed to create" }, 400);
 });
 
 export { Bindings };
