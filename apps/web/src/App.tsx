@@ -33,7 +33,7 @@ function App() {
     queryFn: async () => {
       return (
         (await axios
-          .get(config.apiUrl + "api/tasks")
+          .get(config.apiUrl + "api/task")
           .then((data) => data.data)) || []
       );
     },
@@ -49,7 +49,7 @@ function App() {
     mutationKey: ["tasks-post"],
     mutationFn: async (form: TaskForm) => {
       return (
-        (await axios.post(config.apiUrl + "api/tasks", form).then((data) => {
+        (await axios.post(config.apiUrl + "api/task", form).then((data) => {
           reset({}, { keepValues: false, keepDirty: false, keepErrors: false });
           queryClient.invalidateQueries({ queryKey: ["tasks"] });
           return data.data;
