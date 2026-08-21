@@ -1,121 +1,131 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "./assets/vite.svg";
-import heroImg from "./assets/hero.png";
-import "./App.css";
-
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { config } from "./config";
+import axios from "axios";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./components/ui/8bit/card";
+import { Label } from "./components/ui/8bit/label";
+import { Input } from "./components/ui/8bit/input";
+import { Button } from "./components/ui/8bit/button";
+import { ChatBubble } from "@pxlkit/social";
+import { PxlKitIcon, AnimatedPxlKitIcon } from "@pxlkit/core";
+import { Textarea } from "./components/ui/8bit/textarea";
+import { CoinSpin, BouncingBall } from "@pxlkit/gamification";
+import { useEffect, useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./components/ui/8bit/table";
+import { zTaskForm, type Task, type TaskForm } from "./types/task";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 function App() {
-  const [count, setCount] = useState(0);
+  const { data: tasks, isLoading } = useQuery<Task[]>({
+    queryKey: ["tasks"],
+    queryFn: async () => {
+      return (
+        (await axios
+          .get(config.apiUrl + "api/tasks")
+          .then((data) => data.data)) || []
+      );
+    },
+  });
+
+  const form = useForm({
+    resolver: zodResolver(zTaskForm),
+    defaultValues: {},
+  });
+  const { register, control, handleSubmit, reset } = form;
+  const queryClient = useQueryClient();
+  const { mutateAsync, isPending } = useMutation({
+    mutationKey: ["tasks-post"],
+    mutationFn: async (form: TaskForm) => {
+      const create =
+        (await axios.post(config.apiUrl + "api/tasks", form).then((data) => {
+          reset({}, { keepValues: false, keepDirty: false, keepErrors: false });
+          queryClient.invalidateQueries({ queryKey: ["tasks"] });
+          return data.data;
+        })) || undefined;
+    },
+  });
+  const [randomLoadingIcon, setRandomLoadingIcon] = useState(() =>
+    Math.random(),
+  );
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setRandomLoadingIcon(Math.random());
+  }, [isLoading]);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    <div className="flex items-center flex-col h-screen w-full justify-between">
+      <div className="flex-1 flex items-center retro min-w-2xl w-full justify-center">
+        {isLoading ? (
+          <AnimatedPxlKitIcon
+            size={84}
+            icon={randomLoadingIcon > 0.5 ? BouncingBall : CoinSpin}
+          />
+        ) : tasks ? (
+          <Table className="min-w-2xl w-full">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Title</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead>Date Created</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {tasks.map((i) => (
+                <TableRow>
+                  <TableCell>{i.title}</TableCell>
+                  <TableCell>{i.description}</TableCell>
+                  <TableCell>{i.dateCreated}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          "No data found"
+        )}
+      </div>
+      <div className="flex-1 max-w-2xl w-full">
+        <Card className="max-w-2xl w-full">
+          <CardHeader>
+            <CardTitle>Tasks Form</CardTitle>
+          </CardHeader>
+          <form onSubmit={handleSubmit((data) => mutateAsync(data))}>
+            <CardContent>
+              <div className="space-y-1">
+                <Label>Title</Label>
+                <Input
+                  {...register("title", { disabled: isPending })}
+                  placeholder="Enter a title..."
+                />
+              </div>
+              <div className="space-y-1">
+                <Label>Description</Label>
+                <Textarea
+                  {...register("description", { disabled: isPending })}
+                  placeholder="Enter a description..."
+                />
+              </div>
+            </CardContent>
+            <CardFooter className="mt-8">
+              <Button className="ml-auto">
+                <PxlKitIcon icon={ChatBubble} /> Submit Task
+              </Button>
+            </CardFooter>
+          </form>
+        </Card>
+      </div>
+    </div>
   );
 }
 

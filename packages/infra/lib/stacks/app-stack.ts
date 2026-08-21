@@ -10,8 +10,9 @@ import * as apigw_integrations from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import path from "path";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as lambda from "aws-cdk-lib/aws-lambda";
+import { AppStageProps } from "../stages/app-stage";
 export class AppStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props: AppStageProps) {
     super(scope, id, props);
     const bucket = new s3.Bucket(this, "WebBucket", {
       encryption: s3.BucketEncryption.S3_MANAGED,
@@ -42,7 +43,11 @@ export class AppStack extends cdk.Stack {
       corsPreflight: {
         allowHeaders: ["*"],
         allowMethods: [apigw.CorsHttpMethod.ANY],
-        allowOrigins: [`https://${distribution.domainName}`],
+        allowOrigins: [`https://${distribution.domainName}`].concat(
+          props.appStackEnvironment == "dev"
+            ? ["http://localhost", "https://localhost"]
+            : [],
+        ),
       },
     });
     const bucketDeployment = new s3deployment.BucketDeployment(

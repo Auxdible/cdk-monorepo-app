@@ -9,6 +9,12 @@ export let config: Config = {
 };
 
 export async function loadConfig() {
-  const fetched = await axios.get<Config>("./config.json");
-  config = fetched.data!;
+  if (import.meta.env.DEV !== true) {
+    const fetched = await axios.get<Config>("./config.json");
+    config = fetched.data!;
+  } else {
+    config = {
+      apiUrl: import.meta.env["VITE_API_URL"],
+    };
+  }
 }
