@@ -81,10 +81,6 @@ export class AppStack extends cdk.Stack {
         type: dynamodb.AttributeType.STRING,
       },
       tableName: "tasks",
-      sortKey: {
-        name: "dateCreated",
-        type: dynamodb.AttributeType.STRING,
-      },
     });
     tasksTable.grantFullAccess(apiFunc);
   }

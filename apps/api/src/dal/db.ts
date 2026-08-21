@@ -34,12 +34,8 @@ const Task = new Entity(
     indexes: {
       taskID: {
         pk: {
-          field: "pk",
+          field: "taskID",
           composite: ["taskID"],
-        },
-        sk: {
-          field: "sk",
-          composite: ["dateCreated"],
         },
       },
     },
