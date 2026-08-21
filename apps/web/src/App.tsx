@@ -43,17 +43,18 @@ function App() {
     resolver: zodResolver(zTaskForm),
     defaultValues: {},
   });
-  const { register, control, handleSubmit, reset } = form;
+  const { register, handleSubmit, reset } = form;
   const queryClient = useQueryClient();
-  const { mutateAsync, isPending } = useMutation({
+  const { mutateAsync, isLoading: isPending } = useMutation({
     mutationKey: ["tasks-post"],
     mutationFn: async (form: TaskForm) => {
-      const create =
+      return (
         (await axios.post(config.apiUrl + "api/tasks", form).then((data) => {
           reset({}, { keepValues: false, keepDirty: false, keepErrors: false });
           queryClient.invalidateQueries({ queryKey: ["tasks"] });
           return data.data;
-        })) || undefined;
+        })) || undefined
+      );
     },
   });
   const [randomLoadingIcon, setRandomLoadingIcon] = useState(() =>
